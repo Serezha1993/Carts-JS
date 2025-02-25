@@ -1,4 +1,4 @@
-// import products from "../products.js";
+import products from "../products.js";
 
 const paginate = (products) => {
 
@@ -82,10 +82,68 @@ const paginate = (products) => {
             li.classList.add('active');
         }
         return li;
-    }
+    };
+
+    const updatePagination = () => {
+        pagination.addEventListener('click', (event) => {
+
+            
+
+
+            if(!event.target.closest('.pagination-item')) {
+                return;
+            } else {
+                currentPage = event.target.textContent;
+                // console.log('currentPage:', currentPage);
+
+                renderProducts(products, productContainer, productCount, currentPage);
+                let currentLi = document.querySelector('.pagination-item.active');
+                currentLi.classList.remove('active');
+                event.target.classList.add('active');
+            }
+        });
+    };
 
     renderProducts(products, productContainer, productCount, currentPage);
     renderPagination(products, productCount);
+    updatePagination();
+
+    const liElements = document.querySelectorAll('.pagination-item');
+
+    const handlePagination = (event) => {
+        const currentActiveLi = document.querySelector('.pagination-item.active');
+        let newActiveLi;
+
+        if (event.target.closest('.js-pagination-btn-next')) {
+            newActiveLi = currentActiveLi.nextElementSibling;
+            // console.log('newActiveLi:', newActiveLi);
+            currentPage++;
+        } else {
+            newActiveLi = currentActiveLi.previousElementSibling;
+            // console.log('newActiveLi:', newActiveLi);
+            currentPage--;
+        }
+
+        if(!newActiveLi && event.target.closest('.js-pagination-btn-next')) {
+            newActiveLi = liElements[0];
+
+        } else if (!newActiveLi) {
+            newActiveLi = liElements[liElements.length -1];
+        }
+
+        currentActiveLi.classList.remove('active');
+        newActiveLi.classList.add('active');
+
+        if(currentPage > liElements.length) {
+            currentPage = 1;
+        } else if(currentPage < 1) {
+            currentPage = liElements.length;
+        }
+        renderProducts(products, productContainer, productCount, currentPage);
+    };
+
+    btnNextPagination.addEventListener('click', handlePagination);
+    btnPrevPagination.addEventListener('click', handlePagination);
 };
 
 
